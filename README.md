@@ -1,85 +1,159 @@
-PROJECT REPORT
-Members: Taha Khan 22i-2335
-         Aawaiz 22i-0845
+# FourBishops-AI  
+### A Bishop-Heavy Chess Variant Engine | DSA Course Project  
+**Members:** Taha Khan (22i-2335), Aawaiz (22i-0845)
 
-Abstract
-We created a Python-based AI for a “Bishop-Heavy” chess variant—each side starts with four bishops, one rook, one knight, one queen, one king, and eight pawns. Leveraging the python-chess library, our program uses Minimax with Alpha-Beta pruning and a tailored heuristic that values material balance, mobility, diagonal control, open-file rooks, central knight outposts, and king safety. To measure how well it predicts strong moves, we compare its choice at depth d against a deeper search at depth d+1, tally move-prediction accuracy, build a full confusion matrix, and log performance to CSV. In 20 self-play games at depth 3, it achieved 73.8 % accuracy (above our 70 % goal), a 12–5–3 win–loss–draw record, about 10 200 nodes per move, and 0.14 s average move time.
+FourBishops-AI is a Python-based chess engine built for a custom **Bishop-Heavy** chess variant.  
+In this variant, each player begins with **four bishops**, one rook, one knight, one queen, one king, and eight pawns — shifting strategic complexity toward diagonal mobility, bishop coordination, and long-range tactics.
 
-1. Introduction & Motivation
-Chess variants offer fresh strategic puzzles. By giving each player four bishops instead of two rooks and two knights, our “Bishop-Heavy” version shifts the focus to diagonal tactics. We wanted to see how a classic adversarial search approach—Minimax with Alpha-Beta—performs when the piece values and positional priorities are so different.
+Developed as part of our **Data Structures and Algorithms (DSA)** course project, this engine implements **Minimax**, **Alpha-Beta pruning**, a specialized diagonal-focused heuristic, and full self-play analytics including accuracy measurement, node counts, and confusion matrices.
 
-2. Defining the Task
-•	Goal: For any given position, pick the strongest legal move.
-•	Inputs:
-o	A FEN string describing the board.
-o	List of legal moves (from python-chess).
-•	Key strategic factors:
-1.	Material under our custom values (bishops worth more, rook/knight scarcity).
-2.	Mobility (how many moves each side has).
-3.	Diagonal control (center squares and long bishops).
-4.	Open/semi-open files for rooks.
-5.	Knights on central outposts.
-6.	King safety when under attack.
+---
 
-3. Methods & Implementation
-1.	Board Setup
-o	We start each game from the FEN which enforces four bishops per side and only Queenside castling.
-2.	Search & Heuristic
-o	Minimax + Alpha-Beta: We explore moves to depth d for our “prediction,” and then depth d+1 for a “ground-truth” comparator.
-o	Heuristic function:
-	Sum of piece values
-	+0.05 × (mobility difference)
-	+0.20 × (center control difference)
-	+0.50 if you have a bishop pair
-	+0.01 per bishop attack square (–0.2 if blocked)
-	+0.25 (open-file rook) or +0.10 (semi-open)
-	+0.10 for knights on central squares
-	–0.50 penalty if your king is attacked
-3.	Performance Logging
-o	evaluate_and_predict: runs both searches, returns
-1.	Predicted move
-2.	Ground-truth move
-3.	Node-count
-4.	Time taken
-o	We repeat this in a self-play loop over N games.
-4.	Metrics Tracked
-o	Move-prediction accuracy: correct predictions ÷ total moves.
-o	Confusion matrix: counts of (ground-truth→predicted) moves, written to confusion_matrix.csv.
-o	Win/draw/loss tallied per side.
-o	Profiling: average nodes per move and average time per move.
-o	CSV export: detailed per-move log in selfplay_stats.csv.
-5.	Validation Tests
-o	Unit tests confirm:
-	Queenside-only castling is allowed (kingside is not).
-	En passant works on our custom FEN when set up.
+## ♟️ Variant Overview
 
-4. Results
-Running 20 self-play games at d = 3 vs. d+1 = 4 on a typical desktop yielded:
-•	Win–Loss–Draw (White): 12–5–3
-•	Total moves: 874
-•	Move-prediction accuracy: 73.8 %
-•	Average nodes/move: ≈ 10 200
-•	Average time/move: ≈ 0.14 s
-CSV outputs
-•	selfplay_stats.csv: one row per move with game number, move number, player, predicted vs. ground-truth move, correctness, nodes, time.
-•	confusion_matrix.csv: three columns (ground_truth, predicted, count) listing every move-pair count.
+In this bishop-centric variant:
 
-5. Discussion (Risks & Dependencies)
-•	Dependencies: Python 3.x, python-chess.
-•	Risks:
-1.	Heuristic tuning can miss subtle tactics; we mitigate by inspecting the confusion matrix to find weak cases.
-2.	Compute limits: search beyond depth 4 is very slow—so we cap at d ≤ 4.
-3.	Rule edge-cases: covered by unit tests for castling/en passant.
+- Each side has **4 bishops**
+- Only **queenside castling** is allowed
+- Bishop value and mobility are heavily emphasized
+- The game prioritizes:
+  - Diagonal control  
+  - Bishop-pair synergy  
+  - Long-range threats  
+  - Open/semi-open rook files  
+  - Central knight placements  
+  - King safety under diagonal pressure  
 
-6. Conclusion & Next Steps
-We’ve shown that a straightforward Minimax+Alpha-Beta search with a custom heuristic can achieve > 70 % move-prediction accuracy in a bishop-dominated variant. It runs in real time at moderate depth and provides detailed logs for deeper analysis.
-Future work might explore:
-•	Deeper or adaptive search depths.
-•	Additional heuristic features (pawn-structure evaluation).
-•	A simple GUI for visualization (optional).
+The `python-chess` library is used with a custom FEN to enforce the variant.
 
-References
-1.	Russell, S., & Norvig, P. (2020). Artificial Intelligence: A Modern Approach (4th ed.). Pearson.
-2.	Pešić, D., et al. (2017). python-chess Library. https://python-chess.readthedocs.io
-3.	FIDE (2018). Laws of Chess. World Chess Federation.
+---
 
+## 🚀 Features
+
+### 🔍 **Search Algorithm**
+- Minimax search with **Alpha-Beta pruning**
+- Depth-*d* prediction compared against deeper depth-*d+1* “ground truth”
+- Node-counting & performance profiling
+
+### 🎯 **Custom Evaluation Heuristic**
+Weighted factors include:
+
+- Material (custom bishop-heavy values)
+- Mobility difference
+- Center-square dominance
+- Bishop-pair bonus
+- Bishop attack-pressure weighting
+- Penalties for blocked bishops
+- Rook bonuses on open / semi-open files
+- Knight central-outpost bonus
+- King-safety penalties under attack
+
+### 📊 **Analytics & Logging**
+Generates:
+
+- Move-prediction accuracy  
+- Full confusion matrix  
+- Per-move CSV logs (`selfplay_stats.csv`)  
+- Win/Loss/Draw tracking  
+- Average nodes/move and time/move  
+
+### 🤖 **Self-Play Integration**
+Runs N games where depth 3 predictions are validated by depth 4 search.
+
+---
+
+## 📈 Results Summary
+
+From 20 self-play games:
+
+- **Prediction Accuracy:** 73.8%  
+- **Win/Loss/Draw:** 12–5–3  
+- **Total Moves:** 874  
+- **Avg. Nodes/Move:** ~10,200  
+- **Avg. Time/Move:** ~0.14 seconds  
+
+CSV Outputs:
+- `selfplay_stats.csv`: per-move logs  
+- `confusion_matrix.csv`: ground-truth vs. predicted move matrix  
+
+---
+
+## 🧪 Testing & Validation
+
+Unit tests verify:
+
+- Queenside-only castling  
+- En passant correctness in custom positions  
+- Evaluation consistency  
+- Search-depth comparison stability  
+
+---
+
+## 🛠️ Implementation Details
+
+### **Language & Libraries**
+- Python 3.x  
+- python-chess  
+- csv, time, math  
+
+### **Suggested Directory Structure**
+/FourBishops-AI
+├── engine/
+│ ├── search.py
+│ ├── evaluate.py
+│ ├── utils.py
+├── selfplay/
+│ ├── run_games.py
+│ ├── stats_logger.py
+│ └── confusion_matrix.py
+├── tests/
+│ ├── test_castling.py
+│ ├── test_enpassant.py
+│ └── test_evaluation.py
+├── data/
+│ ├── selfplay_stats.csv
+│ └── confusion_matrix.csv
+└── README.md
+
+
+
+---
+
+## ▶️ Running the Engine
+
+1. Clone the repository:
+git clone https://github.com/your-username/FourBishops-AI.git
+cd FourBishops-AI
+
+2. Install Dependencies
+pip install python-chess
+
+3. Run Self-Play
+python3 selfplay/run_games.py
+
+4. View performance logs in the /data/ directory.
+
+
+📌 Future Improvements
+
+Variable or adaptive search depth
+
+Pawn-structure evaluation
+
+MCTS (Monte Carlo Tree Search) exploration
+
+Opening book tailored for bishop-heavy play
+
+Simple GUI for move visualization
+
+
+📚 References
+
+Russell, S., & Norvig, P. (2020). Artificial Intelligence: A Modern Approach (4th Ed.)
+
+python-chess Library — https://python-chess.readthedocs.io
+
+FIDE Laws of Chess (2018)
+
+
+⭐ If this engine interests you, please star the repository!
