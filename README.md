@@ -157,3 +157,5 @@ FIDE Laws of Chess (2018)
 
 
 ⭐ If this engine interests you, please star the repository!
+
+co-contributor -> Taha Khan  
